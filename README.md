@@ -10,5 +10,3 @@ Basic golang stack for https microservice :
 - kubernetes configuration
 - docker-compose 
 - env configuration
-
-

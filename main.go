@@ -1,13 +1,13 @@
 package main
 
 import (
+	"net/http"
+
 	"github.com/kelseyhightower/envconfig"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/lytics/logrus"
-	"net/http"
 )
-
 
 type config struct {
 	PORT string `envconfig:"PORT"`
@@ -24,7 +24,7 @@ func main() {
 	logrus.SetLevel(logrus.DebugLevel)
 
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{"https://www.bellesdespins.com", "http://www.bellesdespins.com"},
+		AllowOrigins: []string{"https://www.domain.com", "http://www.domain.com"},
 		AllowMethods: []string{http.MethodGet, http.MethodPut, http.MethodPost, http.MethodDelete},
 	}))
 
