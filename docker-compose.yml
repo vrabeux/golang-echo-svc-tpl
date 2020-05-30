@@ -1,0 +1,30 @@
+version: '3'
+services:
+  #nats:
+  #  image: nats-streaming:0.16.2
+  #  restart: on-failure
+
+  #db:
+  #  image: postgres
+  #  restart: always
+  #  env_file:
+  #    - .env
+
+  #adminer:
+  #  image: adminer
+  #  restart: always
+  #  ports:
+  #    - 8080:8080
+
+  sv:
+    build:
+      context: .
+      dockerfile: Dockerfile-live-dev
+    ports:
+      - 1323:1323
+    volumes:
+      - .:/app
+    working_dir: /app
+    env_file:
+      - .env
+

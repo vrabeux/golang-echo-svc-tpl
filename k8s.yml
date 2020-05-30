@@ -1,0 +1,69 @@
+# export KUBECONFIG=~/.kube/kubeconfig-k8s-magical-stonebraker-test.yaml
+# kubectl apply -f ./service.yaml
+# kubectl expose deployment clients-svc --type=LoadBalancer --port=1323
+###########  kubectl expose deployment clients-svc --type=ClusterIP --port=1323
+# kubectl autoscale deployment clients-svc --cpu-percent=30 --min=1 --max=10
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: svc-replace-me
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      run: svc-replace-me
+  template:
+    metadata:
+      labels:
+        run: svc-replace-me
+    spec:
+      containers:
+        - image: docker.pkg.github.com/bellesdespins/svc-replace-me/svc-replace-me:latest
+          name: svc-replace-me
+          resources:
+            requests:
+              cpu: 100m
+          ports:
+            - containerPort: 1323
+      imagePullSecrets:
+        - name: regcred
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: svc-replace-me-svc
+  namespace: default
+spec:
+  ports:
+    - port: 1323
+      protocol: TCP
+      targetPort: 1323
+  selector:
+    run: svc-replace-me
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ingress-svc-replace-me
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    kubernetes.io/tls-acme: "true"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  tls:
+    - hosts:
+        - svc-replace-me.demain.com
+      secretName: svc-replace-me-ssl
+  rules:
+    - host: svc-replace-me.domain.com
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: svc-replace-me-svc
+              servicePort: 1323
